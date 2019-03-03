@@ -11,14 +11,17 @@ Naming convention followed across the simulator is:
 '''
 
 import sys
+import numpy 
 import random
 import signal
 import time
 import copy
 import traceback
 import team63
+import anchit
 
-TIME = 100
+
+TIME = 200
 MAX_PTS = 86
 
 class TimedOutExc(Exception):
@@ -357,7 +360,11 @@ if __name__ == '__main__':
 		print '<option> can be 1 => Random player vs. Random player'
 		print '                2 => Human vs. Random Player'
 		print '                3 => Human vs. Human'
-		print '                4 => Our Bot vs. Manual Player'
+		print '                4 => Our Bot vs. Random Player'
+		print '                5 => Our Bot vs. Anchit'
+		print '                6 => Anchit vs Random'
+		print '                7 => Random vs Our Bot'
+		print '                8 => Anchit vs. Our Bot'
 		sys.exit(1)
  
 	obj1 = ''
@@ -377,6 +384,18 @@ if __name__ == '__main__':
 	elif option == '4':
 		obj1 = team63.Team63()
 		obj2 = Random_Player()
+	elif option == '5':
+		obj1 = team63.Team63()
+		obj2 = anchit.Team11()
+	elif option == '6':
+		obj1 = anchit.Team11()
+		obj2 = Random_Player()
+	elif option == '7':
+		obj1 = Random_Player()
+		obj2 = team63.Team63()
+	elif option == '8':
+		obj1 = anchit.Team11()
+		obj2 = team63.Team63()
 	else:
 		print 'Invalid option'
 		sys.exit(1)
