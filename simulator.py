@@ -21,7 +21,7 @@ import team63
 import anchit
 
 
-TIME = 200
+TIME = 100
 MAX_PTS = 86
 
 class TimedOutExc(Exception):
@@ -365,6 +365,7 @@ if __name__ == '__main__':
 		print '                6 => Anchit vs Random'
 		print '                7 => Random vs Our Bot'
 		print '                8 => Anchit vs. Our Bot'
+		print '                9 => Our Bot vs Manual'
 		sys.exit(1)
  
 	obj1 = ''
@@ -396,6 +397,9 @@ if __name__ == '__main__':
 	elif option == '8':
 		obj1 = anchit.Team11()
 		obj2 = team63.Team63()
+	elif option == '9':
+		obj2 = Manual_Player()
+		obj1 = team63.Team63()
 	else:
 		print 'Invalid option'
 		sys.exit(1)
