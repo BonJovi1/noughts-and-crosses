@@ -49,7 +49,7 @@ class Team63():
 			#compute evaluation function for this move 
 			# print(cell);
 			board.big_boards_status[cell[0]][cell[1]][cell[2]] = flag;
-			moveVal = self.minimax(board, 0, 0, cell, -10000, 10000)
+			moveVal = self.minimax(board, 0, 1, cell, -10000, 10000)
 			board.big_boards_status[cell[0]] [cell[1]] [cell[2]] = '-';
 			if (moveVal > self.bestVal):
 				self.bestcell = cell
@@ -60,7 +60,7 @@ class Team63():
 
 	def minimax(self, board, depth, isMax, cell, alpha, beta):
 
-		score,status = self.heuristic(board);
+		score,status = self.heuristic(board, isMax);
 		if depth == 3:
 			return score
 		#if max or min player has won
@@ -98,32 +98,32 @@ class Team63():
 	#calculating cellcount variables
 	def calculate_sbScore(self, number_of_x, number_of_o):
 		if(number_of_x == 1 and number_of_o == 0):
-			self.cellcount1x ++;
+			self.cellcount1x  += 1;
 		elif(number_of_x == 2 and number_of_o == 0):
-			self.cellcount2x ++;
+			self.cellcount2x  += 1;
 		elif(number_of_o == 1 and number_of_x == 0):
-			self.cellcount1o ++;
+			self.cellcount1o  += 1;
 		elif(number_of_o == 2 and number_of_x == 0):
-			self.cellcount2o ++;
+			self.cellcount2o  += 1;
 		elif(number_of_o == 3 and number_of_x == 0):
-			self.cellcount3o ++;
+			self.cellcount3o  += 1;
 		elif(number_of_x == 3 and number_of_o == 0):
-			self.cellcount3x ++;
+			self.cellcount3x  += 1;
 
 	#calculating cellcount variables
 	def calculate_gameStatus(self, number_of_x, number_of_o):
 		if(number_of_x == 1):
-			self.SBcount1x ++;
+			self.SBcount1x  += 1;
 		elif(number_of_x == 2):
-			self.SBcount2x ++;
+			self.SBcount2x  += 1;
 		elif(number_of_o == 1):
-			self.SBcount1o ++;
+			self.SBcount1o  += 1;
 		elif(number_of_o == 2):
-			self.SBcount2o ++;
+			self.SBcount2o  += 1;
 		elif(number_of_o == 3):
-			self.SBcount3o ++;
+			self.SBcount3o  += 1;
 		elif(number_of_x == 3):
-			self.SBcount3x ++;
+			self.SBcount3x  += 1;
 
 	def reinitialize(self):
 		#re-initialize these values for next iteration of smallboards. 
@@ -161,17 +161,23 @@ class Team63():
 		
 		if(self.SBcount3x > 0):
 			self.reinitialize_gameStatus();
-			self.game_score += self.SBWon;#change something
+			total = SB.Won
+			if (isMax == 0):
+				total *= -1
+			self.game_score += total;#change something
 			return 1
 		if(self.SBcount3o > 0):
 			self.reinitialize_gameStatus();
-			self.game_score -= self.SBWon;#change something
+			total = SB.Won
+			if (isMax == 0):
+				total *= -1
+			self.game_score -= total#change something
 			return 1
 		
 		return 0
 
 
-	def heuristic(self, board):
+	def heuristic(self, board, isMax):
 		# original heuristic
 		# winner = board.find_terminal_state();
 		# if(winner[0] == 'x'):
@@ -200,13 +206,13 @@ class Team63():
 					number_of_o = 0;
 					for j in range(index2, index2+2):
 						if ( board.big_boards_status[k][i][j] == 'x'):
-							number_of_x++;
+							number_of_x += 1;
 						if ( board.big_boards_status[k][i][j] == 'o'):
-							number_of_o++;
+							number_of_o += 1;
 					self.calculate_sbScore(number_of_x, number_of_o)
 				
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 				
@@ -217,13 +223,13 @@ class Team63():
 					number_of_o = 0;
 					for j in range(index2, index2+2):
 						if ( board.big_boards_status[k][j][i] == 'x'):
-							number_of_x++;
+							number_of_x += 1;
 						if ( board.big_boards_status[k][j][i] == 'o'):
-							number_of_o++;
+							number_of_o += 1;
 					self.calculate_sbScore(number_of_x, number_of_o)
 
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 				
@@ -232,12 +238,12 @@ class Team63():
 				number_of_o = 0;
 				for i in range(index1, index1+2):
 					if ( board.big_boards_status[k][i][i] == 'x'):
-						number_of_x++;
+						number_of_x += 1;
 					if ( board.big_boards_status[k][i][i] == 'o'):
-						number_of_o++;
+						number_of_o += 1;
 				self.calculate_sbScore(number_of_x, number_of_o)
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 
@@ -246,12 +252,12 @@ class Team63():
 				number_of_o = 0;
 				for i in range(index1, index1+2):
 					if ( board.big_boards_status[k][i][2-i] == 'x'):
-						number_of_x++;
+						number_of_x += 1;
 					if ( board.big_boards_status[k][i][2-i] == 'o'):
-						number_of_o++;
+						number_of_o += 1;
 				self.calculate_sbScore(number_of_x, number_of_o)
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 
@@ -259,6 +265,8 @@ class Team63():
 				total_myscore = (self.cellWeight1 * self.cellcount1x * self.cellcount1x) + (self.cellWeight2 * self.cellcount2x * self.cellcount2x)
 				total_oppscore = (self.cellWeight1 * self.cellcount1o * self.cellcount1o) + (self.cellWeight2 * self.cellcount2o * self.cellcount2o)
 				total = total_myscore - total_oppscore;
+				if(isMax == 0):
+					total *= -1
 				self.sbs_score += total;
 
 				#re-initialize these values for next iteration of smallboards.
@@ -279,12 +287,12 @@ class Team63():
 					number_of_o = 0;
 					for j in range(index2, index2+2):
 						if ( board.big_boards_status[k][i][j] == 'x'):
-							number_of_x++;
+							number_of_x += 1;
 						if ( board.big_boards_status[k][i][j] == 'o'):
-							number_of_o++;
+							number_of_o += 1;
 					self.calculate_sbScore(number_of_x, number_of_o)
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 					
@@ -295,12 +303,12 @@ class Team63():
 					number_of_o = 0;
 					for j in range(index2, index2+2):
 						if ( board.big_boards_status[k][j][i] == 'x'):
-							number_of_x++;
+							number_of_x += 1;
 						if ( board.big_boards_status[k][j][i] == 'o'):
-							number_of_o++;
+							number_of_o += 1;
 					self.calculate_sbScore(number_of_x, number_of_o)
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 				
@@ -309,12 +317,12 @@ class Team63():
 				number_of_o = 0;
 				for i in range(index1, index1+2):
 					if ( board.big_boards_status[k][i][i] == 'x'):
-						number_of_x++;
+						number_of_x += 1;
 					if ( board.big_boards_status[k][i][i] == 'o'):
-						number_of_o++;
+						number_of_o += 1;
 				self.calculate_sbScore(number_of_x, number_of_o)
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 
@@ -323,12 +331,12 @@ class Team63():
 				number_of_o = 0;
 				for i in range(index1, index1+2):
 					if ( board.big_boards_status[k][i][2-i] == 'x'):
-						number_of_x++;
+						number_of_x += 1;
 					if ( board.big_boards_status[k][i][2-i] == 'o'):
-						number_of_o++;
+						number_of_o += 1;
 				self.calculate_sbScore(number_of_x, number_of_o)
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 
@@ -336,6 +344,8 @@ class Team63():
 				total_myscore = (self.cellWeight1 * self.cellcount1x * self.cellcount1x) + (self.cellWeight2 * self.cellcount2x * self.cellcount2x)
 				total_oppscore = (self.cellWeight1 * self.cellcount1o * self.cellcount1o) + (self.cellWeight2 * self.cellcount2o * self.cellcount2o)
 				total = total_myscore - total_oppscore;
+				if(isMax == 0):
+					total *= -1
 				self.sbs_score += total;
 
 				#re-initialize these values for next iteration of smallboards. 
@@ -356,12 +366,12 @@ class Team63():
 					number_of_o = 0;
 					for j in range(index2, index2+2):
 						if ( board.big_boards_status[k][i][j] == 'x'):
-							number_of_x++;
+							number_of_x += 1;
 						if ( board.big_boards_status[k][i][j] == 'o'):
-							number_of_o++;
+							number_of_o += 1;
 					self.calculate_sbScore(number_of_x, number_of_o)
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 					
@@ -372,12 +382,12 @@ class Team63():
 					number_of_o = 0;
 					for j in range(index2, index2+2):
 						if ( board.big_boards_status[k][j][i] == 'x'):
-							number_of_x++;
+							number_of_x += 1;
 						if ( board.big_boards_status[k][j][i] == 'o'):
-							number_of_o++;
+							number_of_o += 1;
 					self.calculate_sbScore(number_of_x, number_of_o)
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 				
@@ -386,12 +396,12 @@ class Team63():
 				number_of_o = 0;
 				for i in range(index1, index1+2):
 					if ( board.big_boards_status[k][i][i] == 'x'):
-						number_of_x++;
+						number_of_x += 1;
 					if ( board.big_boards_status[k][i][i] == 'o'):
-						number_of_o++;
+						number_of_o += 1;
 				self.calculate_sbScore(number_of_x, number_of_o)
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 
@@ -400,12 +410,12 @@ class Team63():
 				number_of_o = 0;
 				for i in range(index1, index1+2):
 					if ( board.big_boards_status[k][i][2-i] == 'x'):
-						number_of_x++;
+						number_of_x += 1;
 					if ( board.big_boards_status[k][i][2-i] == 'o'):
-						number_of_o++;
+						number_of_o += 1;
 				self.calculate_sbScore(number_of_x, number_of_o)
 				#checking if smallboard is won
-				ans = check_win();
+				ans = self.check_win();
 				if(ans == 1):
 					continue;
 
@@ -413,6 +423,8 @@ class Team63():
 				total_myscore = (self.cellWeight1 * self.cellcount1x * self.cellcount1x) + (self.cellWeight2 * self.cellcount2x * self.cellcount2x)
 				total_oppscore = (self.cellWeight1 * self.cellcount1o * self.cellcount1o) + (self.cellWeight2 * self.cellcount2o * self.cellcount2o)
 				total = total_myscore - total_oppscore;
+				if(isMax == 0):
+					total *= -1
 				self.sbs_score += total;
 
 				#re-initialize these values for next iteration of smallboards. 
@@ -431,11 +443,11 @@ class Team63():
 				number_of_o = 0;
 				for j in range(ind2, ind2+2):
 					if ( board.small_boards_status[k][i][j] == 'x'):
-						number_of_x++;
+						number_of_x += 1;
 					if ( board.small_boards_status[k][i][j] == 'o'):
-						number_of_o++;
+						number_of_o += 1;
 				self.calculate_gameStatus(number_of_x, number_of_o)
-			ans = check_win_gameStatus();
+			ans = self.check_win_gameStatus();
 			if(ans == 1):
 				game_won = 1
 				continue;
@@ -445,11 +457,11 @@ class Team63():
 				number_of_o = 0;
 				for j in range(ind2, ind2+2):
 					if ( board.small_boards_status[k][j][i] == 'x'):
-						number_of_x++;
+						number_of_x += 1;
 					if ( board.small_boards_status[k][j][i] == 'o'):
-						number_of_o++;
+						number_of_o += 1;
 				self.calculate_gameStatus(number_of_x, number_of_o)
-			ans = check_win_gameStatus();
+			ans = self.check_win_gameStatus();
 			if(ans == 1):
 				game_won = 1
 				continue;
@@ -458,11 +470,11 @@ class Team63():
 			number_of_o = 0;
 			for i in range(ind1, ind1+2):
 				if ( board.small_boards_status[k][i][i] == 'x'):
-					number_of_x++;
+					number_of_x += 1;
 				if ( board.small_boards_status[k][i][i] == 'o'):
-					number_of_o++;
+					number_of_o += 1;
 			self.calculate_gameStatus(number_of_x, number_of_o)
-			ans = check_win_gameStatus();
+			ans = self.check_win_gameStatus();
 			if(ans == 1):
 				game_won = 1
 				continue;
@@ -471,18 +483,21 @@ class Team63():
 			number_of_o = 0;
 			for i in range(ind1, ind1+2):
 				if ( board.small_boards_status[k][i][2-i] == 'x'):
-					number_of_x++;
+					number_of_x += 1;
 				if ( board.small_boards_status[k][i][2-i] == 'o'):
-					number_of_o++;
+					number_of_o += 1;
 			self.calculate_gameStatus(number_of_x, number_of_o)
-			ans = check_win_gameStatus();
+			ans = self.check_win_gameStatus();
 			if(ans == 1):
 				game_won = 1
 				continue;
 
 			total_myscore = (self.SBWeight1 * self.SBcount1x * self.SBcount1x) + (self.SBWeight2 * self.SBcount2x * self.SBcount2x)
 			total_oppscore = (self.SBWeight1 * self.SBcount1o * self.SBcount1o) + (self.SBWeight2 * self.SBcount2o * self.SBcount2o)
-			self.game_score += total_myscore - total_oppscore;
+			total = total_myscore - total_oppscore;
+			if(isMax == 0):
+					total *= -1
+			self.game_score += total
 			self.reinitialize_gameStatus();
 
 		#So now we calculate the heuristic score for that node in the tree.
