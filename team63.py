@@ -16,9 +16,9 @@ class Team63():
 		self.cellWeight1 = 3
 		self.cellWeight2 = 27
 		self.smallboardwon = 400
-		self.SBWeight1 = 729
-		self.SBWeight2 = 2187
-		self.SBWon = 8000 #won the game
+		self.SBWeight1 = 2187
+		self.SBWeight2 = 6561
+		self.SBWon = 19683 #won the game
 		
 		#Cell count variables
 		self.cellcount1x = 0
@@ -41,10 +41,13 @@ class Team63():
 		self.start = 0.0
 		self.limit = 23
 
+		self.sb3x3 = 0 #for bonus move
+
 	def move(self, board, old_move, flag):
 
 		self.bestVal = -100000
 		self.bestcell = (-1, -1, -1)
+
 		if (flag == 'x'):
 			self.player1 = 'x'
 			self.player2 = 'o'
@@ -59,8 +62,11 @@ class Team63():
 			#compute evaluation function for this move 
 			# board.big_boards_status[cell[0]][cell[1]][cell[2]] = self.player1;
 			board.update(old_move, cell, self.player1 )
-			
-			moveVal = self.minimax(board, 0, 1, cell, -100000, 100000)
+
+			if board.small_boards_status[cell[0]] [cell[1]/3] [cell[2]/3] == '-':
+				moveVal = self.minimax(board, 0, 1, cell, -100000, 100000)
+			else:
+				moveVal = self.minimax(board, 0, 0, cell, -100000, 100000)
 
 			board.big_boards_status[cell[0]] [cell[1]] [cell[2]] = '-';
 			board.small_boards_status[cell[0]] [cell[1]/3] [cell[2]/3] = '-';
@@ -82,7 +88,7 @@ class Team63():
 
 		self.start = time.time()
 
-		if depth == 0:
+		if depth == 3:
 			score,status = self.heuristic(board, isMax);
 			return score
 		
@@ -111,8 +117,12 @@ class Team63():
 				# board.big_boards_status[i[0]] [i[1]] [i[2]] = self.player2;
 				board.update(cell, i, self.player2 )
 				
-				best = max(best, self.minimax(board, depth+1, not(isMax), i, alpha, beta) );
+				if board.small_boards_status[i[0]] [i[1]/3] [i[2]/3] == '-':
+					best = max(best, self.minimax(board, depth+1, not(isMax), i, alpha, beta) )
+				else:
+					best = max(best, self.minimax(board, depth+1, isMax, i, alpha, beta) )
 				
+				#revert back
 				board.big_boards_status[i[0]] [i[1]] [i[2]] = '-';
 				board.small_boards_status[i[0]] [i[1]/3] [i[2]/3] = '-';
 
@@ -128,9 +138,12 @@ class Team63():
 				
 				# board.big_boards_status[i[0]] [i[1]] [i[2]] = self.player1;
 				board.update(cell, i, self.player1 )
+				if board.small_boards_status[i[0]] [i[1]/3] [i[2]/3] == '-':
+					best = min(best, self.minimax(board, depth+1, not(isMax), i, alpha, beta) );
+				else:
+					best = min(best, self.minimax(board, depth+1, isMax, i, alpha, beta) );
 
-				best = min(best, self.minimax(board, depth+1, not(isMax), i, alpha, beta) );
-
+				#revert back
 				board.big_boards_status[i[0]] [i[1]] [i[2]] = '-';
 				board.small_boards_status[i[0]] [i[1]/3] [i[2]/3] = '-';
 
@@ -195,12 +208,14 @@ class Team63():
 			self.reinitialize();
 			# print("smallboardwon")
 			total = self.smallboardwon
+			self.sb3x3 = 1
 			self.sbs_score += total;
 			return 1
 		
 		if(self.cellcount3o > 0):
 			self.reinitialize();
 			total = self.smallboardwon
+			# self.sb3x3 = 1
 			self.sbs_score -= total;
 			return 1
 		
@@ -236,8 +251,7 @@ class Team63():
 		self.sbs_score = 0;
 		self.game_score = 0;
 		heuristic_score = 0;
-
-		game_won = 0;
+		self.sb3x3 = 0;
 		
 		#calculating smallboard score. We have the board object with us. Let's visit each smallboard and calculate its score
 		#There are 3 rows of small boards 
