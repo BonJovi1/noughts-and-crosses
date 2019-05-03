@@ -7,7 +7,7 @@ import traceback
 
 class Team63():
 	def __init__(self):
-		self.bestVal = -100000
+		self.bestVal = -10000000
 		#best move's location 
 		self.bestcell = (-1, -1, -1)
 		self.player1 = '-'
@@ -15,6 +15,7 @@ class Team63():
 		#Weight Variables
 		self.cellWeight1 = 3
 		self.cellWeight2 = 27
+		self.celloppweight = 81
 		self.smallboardwon = 400
 		self.SBWeight1 = 2187
 		self.SBWeight2 = 6561
@@ -27,6 +28,7 @@ class Team63():
 		self.cellcount1o = 0
 		self.cellcount2o = 0 
 		self.cellcount3o = 0 
+		self.cellcountopp = 0
 
 		#SB count variables
 		self.SBcount1x = 0
@@ -40,12 +42,14 @@ class Team63():
 		self.game_score = 0
 		self.start = 0.0
 		self.limit = 23
+		self.chance = 0
 
 		self.sb3x3 = 0 #for bonus move
 
 	def move(self, board, old_move, flag):
 
-		self.bestVal = -100000
+		self.chance += 1
+		self.bestVal = -10000000
 		self.bestcell = (-1, -1, -1)
 
 		if (flag == 'x'):
@@ -54,6 +58,9 @@ class Team63():
 		else:
 			self.player1 = 'o'
 			self.player2 = 'x'
+
+		# if(self.chance == 1 and self.player1 == 'x'):
+		# 	return(0,4,4)
 		#You have to implement the move function with the same signature as this
 		#Find the list of valid cells allowed 
 		cells = board.find_valid_move_cells(old_move)
@@ -64,9 +71,9 @@ class Team63():
 			board.update(old_move, cell, self.player1 )
 
 			if board.small_boards_status[cell[0]] [cell[1]/3] [cell[2]/3] == '-':
-				moveVal = self.minimax(board, 0, 1, cell, -100000, 100000)
+				moveVal = self.minimax(board, 0, 1, cell, -10000000, 10000000)
 			else:
-				moveVal = self.minimax(board, 0, 0, cell, -100000, 100000)
+				moveVal = self.minimax(board, 0, 0, cell, -10000000, 10000000)
 
 			board.big_boards_status[cell[0]] [cell[1]] [cell[2]] = '-';
 			board.small_boards_status[cell[0]] [cell[1]/3] [cell[2]/3] = '-';
@@ -79,9 +86,9 @@ class Team63():
 
 		print self.bestcell
 		print self.bestVal
+		
 
 		# age=input("What is ur age")
-
 		return self.bestcell;
 
 	def minimax(self, board, depth, isMax, cell, alpha, beta):
@@ -95,9 +102,9 @@ class Team63():
 		#if max or min player has won
 		winner = board.find_terminal_state();
 		if(winner[0] == self.player1):
-			return 100000
+			return 10000000
 		if(winner[0] == self.player2):
-			return -100000
+			return -10000000
 		if(winner[1] == 'DRAW'):
 			return 0
 		if(time.time() - self.start > self.limit):
@@ -109,7 +116,7 @@ class Team63():
 
 		if(isMax == 1):
 			
-			best = -100000;
+			best = -10000000;
 			cells = board.find_valid_move_cells(cell)
 			
 			for i in cells:
@@ -132,7 +139,7 @@ class Team63():
 			return best;
 
 		else:
-			best = 100000;
+			best = 10000000;
 			cells = board.find_valid_move_cells(cell)
 			for i in cells:
 				
@@ -176,6 +183,7 @@ class Team63():
 		self.cellcount1o = 0
 		self.cellcount2o = 0 
 		self.cellcount3o = 0
+		self.cellcountopp = 0
 
 	def reinitialize_gameStatus(self):
 		#re-initialize these values for next iteration of smallboards. 
@@ -200,6 +208,8 @@ class Team63():
 			self.cellcount3o  += 1;
 		elif(number_of_x == 3):
 			self.cellcount3x  += 1;
+		elif(number_of_o == 2 and number_of_x == 1):
+			self.cellcountopp += 1;
 
 	#check if smallboard has been won
 	def check_win(self):
@@ -274,8 +284,8 @@ class Team63():
 							number_of_o += 1;
 					self.calculate_sbScore(number_of_x, number_of_o)
 
-				# if board.big_boards_status[0][1][7] == 'x' and k==0 and l==2:
-				# 		print self.cellcount1x
+				# if board.big_boards_status[0][1][1] == 'x' and k==0 and l==0:
+				# 	print self.cellcount1x
 
 				#Columns of the smallboard
 				for j in range(index2, index2+3):
@@ -328,6 +338,7 @@ class Team63():
 				if(ans == 0):
 				#applying our formula for calculating score for this smallboard
 					total_myscore = (self.cellWeight1 * self.cellcount1x * self.cellcount1x) + (self.cellWeight2 * self.cellcount2x * self.cellcount2x)
+					 # + (self.celloppweight * self.cellcountopp * self.cellcountopp)
 					total_oppscore = (self.cellWeight1 * self.cellcount1o * self.cellcount1o) + (self.cellWeight2 * self.cellcount2o * self.cellcount2o)
 					total = total_myscore - total_oppscore;
 
@@ -414,7 +425,7 @@ class Team63():
 				
 				if(ans == 0):
 				#applying our formula for calculating score for this smallboard
-					total_myscore = (self.cellWeight1 * self.cellcount1x * self.cellcount1x) + (self.cellWeight2 * self.cellcount2x * self.cellcount2x)
+					total_myscore = (self.cellWeight1 * self.cellcount1x * self.cellcount1x) + (self.cellWeight2 * self.cellcount2x * self.cellcount2x) 
 					total_oppscore = (self.cellWeight1 * self.cellcount1o * self.cellcount1o) + (self.cellWeight2 * self.cellcount2o * self.cellcount2o)
 					total = total_myscore - total_oppscore;
 
@@ -501,7 +512,7 @@ class Team63():
 				
 				if(ans == 0):
 				#applying our formula for calculating score for this smallboard
-					total_myscore = (self.cellWeight1 * self.cellcount1x * self.cellcount1x) + (self.cellWeight2 * self.cellcount2x * self.cellcount2x)
+					total_myscore = (self.cellWeight1 * self.cellcount1x * self.cellcount1x) + (self.cellWeight2 * self.cellcount2x * self.cellcount2x) 
 					total_oppscore = (self.cellWeight1 * self.cellcount1o * self.cellcount1o) + (self.cellWeight2 * self.cellcount2o * self.cellcount2o)
 					total = total_myscore - total_oppscore;
 					

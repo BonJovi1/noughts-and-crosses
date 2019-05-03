@@ -19,6 +19,8 @@ import copy
 import traceback
 import team63
 import anchit
+import simple
+import swaraj
 
 
 TIME = 100
@@ -366,6 +368,8 @@ if __name__ == '__main__':
 		print '                7 => Random vs Our Bot'
 		print '                8 => Anchit vs. Our Bot'
 		print '                9 => Our Bot vs Manual'
+		print '                10 => Our Bot vs Simple Bot'
+		print '                11 => Our Bot vs Swaraj'
 		sys.exit(1)
  
 	obj1 = ''
@@ -399,6 +403,12 @@ if __name__ == '__main__':
 		obj2 = team63.Team63()
 	elif option == '9':
 		obj2 = Manual_Player()
+		obj1 = team63.Team63()
+	elif option == '10':
+		obj2 = simple.Simple()
+		obj1 = team63.Team63()
+	elif option == '11':
+		obj2 = swaraj.Team42()
 		obj1 = team63.Team63()
 	else:
 		print 'Invalid option'
